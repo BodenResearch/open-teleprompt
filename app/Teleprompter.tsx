@@ -5,7 +5,10 @@ import useSWR from 'swr';
 import MarkdownBlock from '@agixt/interactive/MarkdownBlock';
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import { v4 as uuidv4 } from 'uuid';
-import { FaArrowLeft, FaPlay, FaStop, FaArrowsAltV, FaArrowsAltH, FaChevronRight, FaAngleDoubleRight } from 'react-icons/fa';
+import { ArrowLeft, Play, Square, ArrowUpDown, ArrowLeftRight, ChevronRight, ChevronsRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Slider } from '@/components/ui/slider';
 
 export type GoogleDoc = {
   id: string;
@@ -127,19 +130,21 @@ export default function Teleprompter({ googleDoc, setSelectedDocument }: Telepro
 
   return (
     <>
-      <div className='px-56'>
+      <div className='container mx-auto px-4'>
         <h1 className='flex items-center justify-center text-3xl font-bold mb-6'>
-          <button onClick={() => setSelectedDocument(null)} className='p-2 hover:bg-gray-100 rounded-full mr-2'>
-            <FaArrowLeft className='w-6 h-6' />
-          </button>
+          <Button variant='ghost' size='icon' onClick={() => setSelectedDocument(null)} className='mr-2'>
+            <ArrowLeft className='h-6 w-6' />
+          </Button>
           {googleDoc.name} - {mainWindow ? 'Main Window' : 'Follower Window'}
         </h1>
 
         {error ? (
-          <div className='space-y-2'>
-            <p className='text-base'>Unable to load document from Google, an error occurred.</p>
-            <p className='text-base text-red-500'>{error.message}</p>
-          </div>
+          <Card>
+            <CardContent>
+              <p className='text-base'>Unable to load document from Google, an error occurred.</p>
+              <p className='text-base text-destructive'>{error.message}</p>
+            </CardContent>
+          </Card>
         ) : (
           <div
             style={{
@@ -151,74 +156,71 @@ export default function Teleprompter({ googleDoc, setSelectedDocument }: Telepro
         )}
       </div>
 
-      <div className='fixed top-24 left-8 w-40 h-24 flex flex-col items-center'>
-        <span className='text-sm text-center w-full mb-2'>Control Panel</span>
+      <Card className='fixed top-24 left-8 w-48'>
+        <CardHeader>
+          <CardTitle className='text-sm text-center'>Control Panel</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {!mainWindow ? (
+            <Button
+              onClick={() => {
+                fetch('/api/v1/scroll', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: getCookie('jwt'),
+                  },
+                  body: JSON.stringify({ clientID: clientID, main: clientID }),
+                });
+              }}
+            >
+              Assume Control
+            </Button>
+          ) : !autoScrolling ? (
+            <div className='space-y-4'>
+              <div className='flex justify-center space-x-2'>
+                <Button
+                  variant='outline'
+                  size='icon'
+                  onClick={() => {
+                    if (mainWindow && playingIntervalRef.current === null) {
+                      setAutoScrolling(true);
+                      const interval = setInterval(handleInterval, 500);
+                      playingIntervalRef.current = interval as unknown as number;
+                    }
+                  }}
+                >
+                  <Play className='h-4 w-4' />
+                </Button>
+                <Button variant='outline' size='icon' onClick={() => mainWindow && setFlipVertical((old) => !old)}>
+                  <ArrowUpDown className={`h-4 w-4 ${flipVertical ? 'text-primary' : ''}`} />
+                </Button>
+                <Button variant='outline' size='icon' onClick={() => mainWindow && setFlipHorizontal((old) => !old)}>
+                  <ArrowLeftRight className={`h-4 w-4 ${flipHorizontal ? 'text-primary' : ''}`} />
+                </Button>
+              </div>
 
-        {!mainWindow ? (
-          <button
-            className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
-            onClick={() => {
-              fetch('/api/v1/scroll', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  Authorization: getCookie('jwt'),
-                },
-                body: JSON.stringify({ clientID: clientID, main: clientID }),
-              });
-            }}
-          >
-            Assume Control
-          </button>
-        ) : !autoScrolling ? (
-          <div className='space-y-2 w-full'>
-            <div className='flex justify-center space-x-2'>
-              <button
-                onClick={() => {
-                  if (mainWindow && playingIntervalRef.current === null) {
-                    setAutoScrolling(true);
-                    const interval = setInterval(handleInterval, 500);
-                    playingIntervalRef.current = interval as unknown as number;
-                  }
-                }}
-                className='p-2 hover:bg-gray-100 rounded-full'
-              >
-                <FaPlay className='w-6 h-6' />
-              </button>
-              <button
-                onClick={() => mainWindow && setFlipVertical((old) => !old)}
-                className='p-2 hover:bg-gray-100 rounded-full'
-              >
-                <FaArrowsAltV className={`w-6 h-6 ${flipVertical ? 'text-blue-500' : ''}`} />
-              </button>
-              <button
-                onClick={() => mainWindow && setFlipHorizontal((old) => !old)}
-                className='p-2 hover:bg-gray-100 rounded-full'
-              >
-                <FaArrowsAltH className={`w-6 h-6 ${flipHorizontal ? 'text-blue-500' : ''}`} />
-              </button>
+              <div className='space-y-2'>
+                <div className='flex justify-between'>
+                  <ChevronRight className='h-4 w-4' />
+                  <ChevronsRight className='h-4 w-4' />
+                </div>
+                <Slider
+                  min={5}
+                  max={50}
+                  step={5}
+                  value={[autoScrollSpeed]}
+                  onValueChange={(value) => setAutoScrollSpeed(value[0])}
+                />
+              </div>
             </div>
-
-            <div className='flex items-center w-full px-2'>
-              <FaChevronRight className='w-4 h-4 mr-2' />
-              <input
-                type='range'
-                min='5'
-                max='50'
-                step='5'
-                value={autoScrollSpeed}
-                onChange={(e) => setAutoScrollSpeed(Number(e.target.value))}
-                className='w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer'
-              />
-              <FaAngleDoubleRight className='w-4 h-4 ml-2' />
-            </div>
-          </div>
-        ) : (
-          <button onClick={handleKillInterval} className='p-2 hover:bg-gray-100 rounded-full'>
-            <FaStop className='w-6 h-6' />
-          </button>
-        )}
-      </div>
+          ) : (
+            <Button variant='outline' size='icon' onClick={handleKillInterval}>
+              <Square className='h-4 w-4' />
+            </Button>
+          )}
+        </CardContent>
+      </Card>
     </>
   );
 }

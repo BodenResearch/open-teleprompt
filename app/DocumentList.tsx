@@ -1,5 +1,6 @@
 import React from 'react';
-import { FaStar, FaRegStar } from 'react-icons/fa';
+import { Star, StarOff } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export type GoogleDoc = {
   id: string;
@@ -17,38 +18,32 @@ export type DocumentListProps = {
 export default function DocumentList({ documents, setSelectedDocument }: DocumentListProps) {
   return (
     <div className='w-full overflow-x-auto'>
-      <table className='min-w-full divide-y divide-gray-200'>
-        <thead className='bg-gray-50'>
-          <tr>
-            <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Name</th>
-            <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Starred</th>
-            <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Modified</th>
-            <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Size</th>
-          </tr>
-        </thead>
-        <tbody className='bg-white divide-y divide-gray-200'>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Starred</TableHead>
+            <TableHead>Modified</TableHead>
+            <TableHead>Size</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {documents.map((doc) => (
-            <tr key={doc.id} className='hover:bg-gray-50'>
-              <td className='px-6 py-4 whitespace-nowrap cursor-pointer' onClick={() => setSelectedDocument(doc)}>
-                <div className='text-sm text-gray-900'>{doc.name}</div>
-              </td>
-              <td className='px-6 py-4 whitespace-nowrap'>
+            <TableRow key={doc.id} className='hover:bg-muted/50 cursor-pointer' onClick={() => setSelectedDocument(doc)}>
+              <TableCell>{doc.name}</TableCell>
+              <TableCell>
                 {doc.starred ? (
-                  <FaStar className='text-blue-500 text-lg' />
+                  <Star className='text-primary h-5 w-5' />
                 ) : (
-                  <FaRegStar className='text-gray-400 text-lg' />
+                  <StarOff className='text-muted-foreground h-5 w-5' />
                 )}
-              </td>
-              <td className='px-6 py-4 whitespace-nowrap'>
-                <div className='text-sm text-gray-500'>{new Date(doc.modifiedTime).toLocaleString()}</div>
-              </td>
-              <td className='px-6 py-4 whitespace-nowrap'>
-                <div className='text-sm text-gray-500'>{(doc.size / 1024).toFixed(2)} KB</div>
-              </td>
-            </tr>
+              </TableCell>
+              <TableCell>{new Date(doc.modifiedTime).toLocaleString()}</TableCell>
+              <TableCell>{(doc.size / 1024).toFixed(2)} KB</TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

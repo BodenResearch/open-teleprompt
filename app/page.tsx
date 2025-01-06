@@ -24,12 +24,12 @@ export default function Home() {
   const [selectedDocument, setSelectedDocument] = useState(null);
 
   return (
-    <div className='absolute inset-0 flex flex-col items-center'>
+    <div className='container mx-auto px-4 py-8'>
       {!selectedDocument && (
         <>
-          <h1 className='text-4xl font-bold my-4'>Welcome to OpenTeleprompt</h1>
+          <h1 className='text-4xl font-bold mb-8 text-center'>Welcome to OpenTeleprompt</h1>
           {isLoading ? (
-            <p className='text-base'>Loading documents...</p>
+            <p className='text-lg text-center'>Loading documents...</p>
           ) : (
             <DocumentList documents={documents} setSelectedDocument={setSelectedDocument} />
           )}
