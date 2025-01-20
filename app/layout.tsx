@@ -6,6 +6,7 @@ import React, { ReactNode } from 'react';
 import AppWrapper from 'jrgcomponents/AppWrapper/Wrapper/Themed';
 import Head from 'jrgcomponents/Head';
 import './globals.css';
+import { cn } from '@/lib/utils';
 
 const inter = Inter({ subsets: ['latin'] });
 

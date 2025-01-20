@@ -130,7 +130,7 @@ export default function Teleprompter({ googleDoc, setSelectedDocument }: Telepro
 
   return (
     <>
-      <div className='container mx-auto px-4'>
+      <div className='container mx-auto px-16'>
         <h1 className='flex items-center justify-center text-3xl font-bold mb-6'>
           <Button variant='ghost' size='icon' onClick={() => setSelectedDocument(null)} className='mr-2'>
             <ArrowLeft className='h-6 w-6' />
