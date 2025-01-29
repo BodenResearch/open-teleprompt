@@ -132,71 +132,73 @@ export default function Teleprompter({ googleDoc, setSelectedDocument }: Telepro
     <div className='flex flex-col md:flex-row container mx-auto px-4 md:px-16 space-y-8 md:space-y-0 md:space-x-8'>
       {/* Control Panel */}
       <div className='w-full md:w-48'>
-        <Card className='w-full md:fixed md:top-24 md:w-48'>
-          <CardHeader>
-            <CardTitle className='text-sm text-center'>Control Panel</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {!mainWindow ? (
-              <Button
-                onClick={() => {
-                  fetch('/api/v1/scroll', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                      Authorization: getCookie('jwt'),
-                    },
-                    body: JSON.stringify({ clientID: clientID, main: clientID }),
-                  });
-                }}
-              >
-                Assume Control
-              </Button>
-            ) : !autoScrolling ? (
-              <div className='space-y-4'>
-                <div className='flex justify-center space-x-2'>
-                  <Button
-                    variant='outline'
-                    size='icon'
-                    onClick={() => {
-                      if (mainWindow && playingIntervalRef.current === null) {
-                        setAutoScrolling(true);
-                        const interval = setInterval(handleInterval, 500);
-                        playingIntervalRef.current = interval as unknown as number;
-                      }
-                    }}
-                  >
-                    <Play className='h-4 w-4' />
-                  </Button>
-                  <Button variant='outline' size='icon' onClick={() => mainWindow && setFlipVertical((old) => !old)}>
-                    <ArrowUpDown className={`h-4 w-4 ${flipVertical ? 'text-primary' : ''}`} />
-                  </Button>
-                  <Button variant='outline' size='icon' onClick={() => mainWindow && setFlipHorizontal((old) => !old)}>
-                    <ArrowLeftRight className={`h-4 w-4 ${flipHorizontal ? 'text-primary' : ''}`} />
-                  </Button>
-                </div>
-
-                <div className='space-y-2'>
-                  <div className='flex justify-between'>
-                    <ChevronRight className='h-4 w-4' />
-                    <ChevronsRight className='h-4 w-4' />
+        <div className='fixed bottom-4 left-1/2 -translate-x-1/2 z-20 max-w-xs w-full px-4 md:w-56 md:top-24 md:left-4 md:translate-x-0'>
+          <Card>
+            <CardHeader>
+              <CardTitle className='text-sm text-center'>Control Panel</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {!mainWindow ? (
+                <Button
+                  onClick={() => {
+                    fetch('/api/v1/scroll', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: getCookie('jwt'),
+                      },
+                      body: JSON.stringify({ clientID: clientID, main: clientID }),
+                    });
+                  }}
+                >
+                  Assume Control
+                </Button>
+              ) : !autoScrolling ? (
+                <div className='space-y-4'>
+                  <div className='flex justify-center space-x-2'>
+                    <Button
+                      variant='outline'
+                      size='icon'
+                      onClick={() => {
+                        if (mainWindow && playingIntervalRef.current === null) {
+                          setAutoScrolling(true);
+                          const interval = setInterval(handleInterval, 500);
+                          playingIntervalRef.current = interval as unknown as number;
+                        }
+                      }}
+                    >
+                      <Play className='h-4 w-4' />
+                    </Button>
+                    <Button variant='outline' size='icon' onClick={() => mainWindow && setFlipVertical((old) => !old)}>
+                      <ArrowUpDown className={`h-4 w-4 ${flipVertical ? 'text-primary' : ''}`} />
+                    </Button>
+                    <Button variant='outline' size='icon' onClick={() => mainWindow && setFlipHorizontal((old) => !old)}>
+                      <ArrowLeftRight className={`h-4 w-4 ${flipHorizontal ? 'text-primary' : ''}`} />
+                    </Button>
                   </div>
-                  <Slider
-                    min={5}
-                    max={50}
-                    step={5}
-                    value={[autoScrollSpeed]}
-                    onValueChange={(value) => setAutoScrollSpeed(value[0])}
-                  />
+
+                  <div className='space-y-2'>
+                    <div className='flex justify-between'>
+                      <ChevronRight className='h-4 w-4' />
+                      <ChevronsRight className='h-4 w-4' />
+                    </div>
+                    <Slider
+                      min={5}
+                      max={50}
+                      step={5}
+                      value={[autoScrollSpeed]}
+                      onValueChange={(value) => setAutoScrollSpeed(value[0])}
+                    />
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <Button variant='outline' size='icon' onClick={handleKillInterval}>
-                <Square className='h-4 w-4' />
-              </Button>
-            )}
-          </CardContent>
-        </Card>
+              ) : (
+                <Button variant='outline' size='icon' onClick={handleKillInterval}>
+                  <Square className='h-4 w-4' />
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
       {/* Document */}
       <div className='container mx-auto px-16'>
